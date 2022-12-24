@@ -71,6 +71,7 @@ namespace QuizAPI.Controllers
                     take.Score -= takeQuestion.Score; //if the process is updating the mark, then we need to subtract previous mark from total score
                     takeQuestion.Score = mark.Score / 10.0;
                     take.Score += takeQuestion.Score;
+                    takeQuestion.IsOpenEndedQuestionChecked = true;
                 }
             }
 

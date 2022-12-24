@@ -207,7 +207,7 @@ namespace QuizAPI.Controllers
             }
 
 
-            var test = await _context.Tests.Include(test => test.Takes).ThenInclude(take => take.Taker).FirstOrDefaultAsync(test => test.Id == id && test.Quiz.Author.Id == userId);
+            var test = await _context.Tests.Include(test => test.Takes).ThenInclude(take => take.Taker).Include(test => test.Takes).ThenInclude(take => take.TakeQuestions).ThenInclude(takequestion => takequestion.Question).FirstOrDefaultAsync(test => test.Id == id && test.Quiz.Author.Id == userId);
 
             if (test == null)
             {
@@ -218,7 +218,7 @@ namespace QuizAPI.Controllers
 
             if (anonymous)
             {
-                return Ok(test.Takes.Select(take => take.AnonymousCheckIdentifier).ToList());
+                return Ok(test.Takes.Select(take => new { AnonymousId = take.AnonymousCheckIdentifier, IsReviewed = take.TakeQuestions.Where(takequestion => takequestion.Question.Type == QuizType.OpenEnded).All(x => x.IsOpenEndedQuestionChecked)}).ToList());
             }
             else
             {
