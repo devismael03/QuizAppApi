@@ -35,7 +35,7 @@ namespace QuizAPI.Controllers
                 return Unauthorized();
             }
 
-            var take = await _context.Takes.Include(take=>take.TakeQuestions).ThenInclude(takequestion => takequestion.Question).FirstOrDefaultAsync(take => take.AnonymousCheckIdentifier == anonymousId && take.Test.Quiz.Author.Id == userId);
+            var take = await _context.Takes.Include(take=>take.TakeQuestions).ThenInclude(takequestion => takequestion.Question).AsNoTracking().FirstOrDefaultAsync(take => take.AnonymousCheckIdentifier == anonymousId && take.Test.Quiz.Author.Id == userId);
             if(take == null)
             {
                 return BadRequest();
@@ -98,7 +98,7 @@ namespace QuizAPI.Controllers
                 .Include(take => take.TakeQuestions)
                 .ThenInclude(takequestion => takequestion.TakeAnswers)
                 .ThenInclude(takeanswer => takeanswer.Option)
-                .FirstOrDefaultAsync(take => take.Id == id && (take.Test.Quiz.Author.Id == userId || take.Taker.Id == userId));
+                .AsNoTracking().FirstOrDefaultAsync(take => take.Id == id && (take.Test.Quiz.Author.Id == userId || take.Taker.Id == userId));
             if (take == null)
             {
                 return BadRequest();
@@ -139,7 +139,7 @@ namespace QuizAPI.Controllers
                 return Unauthorized();
             }
 
-            return Ok(await _context.Takes.Where(take => take.Taker.Id == userId).Select(take => new { Id = take.Id, Score = take.Score, SuccessRate = take.SuccessRate, TestTitle = take.Test.Title}).ToListAsync());
+            return Ok(await _context.Takes.Where(take => take.Taker.Id == userId).Select(take => new { Id = take.Id, Score = take.Score, SuccessRate = take.SuccessRate, TestTitle = take.Test.Title}).AsNoTracking().ToListAsync());
         }
 
     }

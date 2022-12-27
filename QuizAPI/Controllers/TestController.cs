@@ -51,7 +51,7 @@ namespace QuizAPI.Controllers
         [Authorize(Roles =UserRoles.Student)]
         public async Task<IActionResult> GetTestQuestions(Guid id)
         {
-            var test = await _context.Tests.Include(test => test.Quiz).ThenInclude(quiz => quiz.Questions).ThenInclude(question => question.Options).FirstOrDefaultAsync(test => test.Id == id);
+            var test = await _context.Tests.Include(test => test.Quiz).ThenInclude(quiz => quiz.Questions).ThenInclude(question => question.Options).AsNoTracking().FirstOrDefaultAsync(test => test.Id == id);
 
             if (test == null)
             {
@@ -207,7 +207,7 @@ namespace QuizAPI.Controllers
             }
 
 
-            var test = await _context.Tests.Include(test => test.Takes).ThenInclude(take => take.Taker).Include(test => test.Takes).ThenInclude(take => take.TakeQuestions).ThenInclude(takequestion => takequestion.Question).FirstOrDefaultAsync(test => test.Id == id && test.Quiz.Author.Id == userId);
+            var test = await _context.Tests.Include(test => test.Takes).ThenInclude(take => take.Taker).Include(test => test.Takes).ThenInclude(take => take.TakeQuestions).ThenInclude(takequestion => takequestion.Question).AsNoTracking().FirstOrDefaultAsync(test => test.Id == id && test.Quiz.Author.Id == userId);
 
             if (test == null)
             {

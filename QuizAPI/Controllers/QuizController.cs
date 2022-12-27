@@ -60,7 +60,7 @@ namespace QuizAPI.Controllers
 
             return Ok(await _context.Quizzes.Include(quiz => quiz.Tests).Where(quiz => quiz.Author.Id == userId)
                                             .Select(quiz => new GetQuizzesResponse { QuizId = quiz.Id, QuizTitle = quiz.Title, Tests = quiz.Tests.Select(test => new TestsIndexDto { TestId = test.Id, TestTitle = test.Title }).ToList() })
-                                            .ToListAsync());
+                                            .AsNoTracking().ToListAsync());
         }
 
 
@@ -129,7 +129,7 @@ namespace QuizAPI.Controllers
 
             var user = await _userManager.FindByIdAsync(userId);
 
-            var quiz = await _context.Quizzes.Include(quiz => quiz.Author).Include(quiz => quiz.Questions).ThenInclude(question => question.Options).FirstOrDefaultAsync(quiz => quiz.Id == id);
+            var quiz = await _context.Quizzes.Include(quiz => quiz.Author).Include(quiz => quiz.Questions).ThenInclude(question => question.Options).AsNoTracking().FirstOrDefaultAsync(quiz => quiz.Id == id);
             if (quiz == null || quiz.Author.Id != userId)
             {
                 return BadRequest();
